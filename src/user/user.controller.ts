@@ -1,40 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UsePipes } from "@nestjs/common";
-import { CreateUserDto, createUserSchema } from "./dto/create-user-schema";
-import { UpdatePatchUserDto, updatePatchUserSchema } from "./dto/update-patch-user-schema";
-import { ZodValidationPipe } from "src/pipes/ZodValidationPipe";
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { UserService } from './user.service';
+import { ApiTags } from "@nestjs/swagger";
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('users')
+@ApiTags('user')
+@Controller('user')
 export class UserController {
-    @Post()
-    @UsePipes(new ZodValidationPipe(createUserSchema))
-    async create(@Body() body: CreateUserDto) {
-        return {body};
-    }
 
-    @Get()
-    async readAll() {
-        return {users: []}
-    }
+    constructor(private userService: UserService) {}
 
+    @UseGuards(JwtGuard)
     @Get(':id')
-    async readOne(@Param() params){
-        return {user: {}, params}
+    async getUserById(@Param('id') id: number) {
+        return await this.userService.findById(id);
     }
 
-    @Put(':id')
-    async update(@Body() body, @Param() params){
-        return {body, params}
-    }
-
-    @Patch(':id')
-    @UsePipes(new ZodValidationPipe(updatePatchUserSchema))
-    async updatePartial(@Body() body: UpdatePatchUserDto, @Param() params){
-        // console.log(body)
-        return {body, params}
-    }
-
-    @Delete(':id')
-    async delete(@Param() params){
-        return {params}
-    }
 }

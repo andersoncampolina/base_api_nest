@@ -1,0 +1,24 @@
+# https://www.youtube.com/watch?v=gnq8ZY85UUM
+# Montar: docker-compose up -d
+# Verificar: docker-compose ps
+# Parar: docker-compose down
+# Acessar container: docker exec -it db-nest bash
+# Ver logs: docker-compose logs -f db-nest
+
+version: "3.9"
+
+services:
+  db-nest:
+    image: postgres:latest # imagem do DB com a versão mais recente
+    ports:
+      - "5432:5432" # porta_servidor:porta_docker
+    container_name: "db-nest"
+    restart: always # reinicia o DB sempre que o servidor reiniciar
+    volumes:
+      - db-nest-backup:/var/lib/postgresql/data # cria backup do DB no servidor
+    environment:
+      POSTGRES_USER: pguser # Usuario do db: mudar no .env
+      POSTGRES_PASSWORD: pgpassword
+
+volumes:
+  db-nest-backup: # nome da pasta que vai conter o backup do DB no servidor
